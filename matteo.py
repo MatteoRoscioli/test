@@ -1,0 +1,22 @@
+import turtle
+screen = turtle.Screen()
+screen.bgcolor("black")
+paper = turtle.Turtle()
+paper.color("green")
+for i in range(2):
+    paper.right(90)
+    paper.forward(85)
+    paper.right(90)
+    paper.forward(55)
+paper.right(90)
+paper.forward(25)
+paper.right(90)
+paper.forward(55)
+paper.right(90)
+paper.forward(10)
+paper.right(90)
+paper.penup()
+for i in range(3):
+    paper.forward(15)
+    paper.dot(5)
+turtle.done()
