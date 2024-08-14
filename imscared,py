@@ -1,0 +1,313 @@
+import pygame
+import sys
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Set up the display
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Zelda-inspired Maze Adventure")
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+
+# Fonts
+font = pygame.font.Font(None, 32)
+small_font = pygame.font.Font(None, 24)
+
+# Game variables
+player_health = 100
+player_rupees = 0
+player_inventory = []
+pebble_health = 20
+pebble_bite = -10
+
+# Game states
+INTRO = 0
+INTRO_TEXT = 1
+MAZE = 2
+BATTLE = 3
+SHOP = 4
+DUNGEON = 5
+
+current_state = INTRO
+
+# Load images (placeholder rectangles for now)
+player_img = pygame.Surface((32, 32))
+player_img.fill(GREEN)
+enemy_img = pygame.Surface((32, 32))
+enemy_img.fill(RED)
+rupee_img = pygame.Surface((16, 16))
+rupee_img.fill(BLUE)
+
+# Player position
+player_x, player_y = WIDTH // 2, HEIGHT // 2
+
+# Function to draw text
+def draw_text(text, x, y, font=font, color=WHITE):
+    text_surface = font.render(text, True, color)
+    screen.blit(text_surface, (x, y))
+
+# Function to handle button clicks
+def button(text, x, y, w, h, inactive_color, active_color, action=None):
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+
+    if x + w > mouse[0] > x and y + h > mouse[1] > y:
+        pygame.draw.rect(screen, active_color, (x, y, w, h))
+        if click[0] == 1 and action is not None:
+            action()
+    else:
+        pygame.draw.rect(screen, inactive_color, (x, y, w, h))
+
+    text_surf = font.render(text, True, BLACK)
+    text_rect = text_surf.get_rect()
+    text_rect.center = ((x + (w / 2)), (y + (h / 2)))
+    screen.blit(text_surf, text_rect)
+
+# Function to wrap text
+def wrap_text(text, font, max_width):
+    words = text.split()
+    lines = []
+    current_line = []
+    for word in words:
+        test_line = ' '.join(current_line + [word])
+        if font.size(test_line)[0] <= max_width:
+            current_line.append(word)
+        else:
+            lines.append(' '.join(current_line))
+            current_line = [word]
+    lines.append(' '.join(current_line))
+    return lines
+
+# Intro text
+intro_text = [
+    "In the land of Hyrule, a young hero awakens...",
+    "You find yourself in a treehouse, surrounded by three glowing fairies.",
+    "Startled, you grab your trusty staff and rush outside onto the front porch.",
+    "The door locks behind you, and you realize you've left your keys inside.",
+    "With no way back, you decide to embark on an adventure.",
+    "As you approach the village gate, you find it locked.",
+    "A villager informs you of the village regulation:",
+    "'None may leave unless they conquer the Sacred Maze.'",
+    "Determined, you set out to face the challenge that awaits.",
+    "And so, your journey begins..."
+]
+
+battle_text = ""
+
+def update_battle_text(text):
+    global battle_text
+    battle_text = text
+
+def restart_game():
+    global player_health, pebble_health, current_state, player_rupees, player_inventory
+    player_health = 100
+    pebble_health = 20
+    player_rupees = 0
+    player_inventory = []
+    current_state = INTRO
+
+# New function to draw the player
+def draw_player():
+    screen.blit(player_img, (player_x, player_y))
+
+# New function to move the player
+def move_player(dx, dy):
+    global player_x, player_y
+    player_x += dx
+    player_y += dy
+    player_x = max(0, min(player_x, WIDTH - 32))
+    player_y = max(0, min(player_y, HEIGHT - 32))
+
+# New function for the shop
+def shop():
+    global player_rupees, player_health, player_inventory
+    draw_text("Welcome to the Shop!", 300, 50)
+    draw_text(f"Rupees: {player_rupees}", 50, 100)
+    
+    def buy_potion():
+        global player_rupees, player_inventory
+        if player_rupees >= 20:
+            player_rupees -= 20
+            player_inventory.append("Health Potion")
+            update_battle_text("You bought a Health Potion!")
+        else:
+            update_battle_text("Not enough rupees!")
+
+    def buy_shield():
+        global player_rupees, player_inventory
+        if player_rupees >= 50:
+            player_rupees -= 50
+            player_inventory.append("Shield")
+            update_battle_text("You bought a Shield!")
+        else:
+            update_battle_text("Not enough rupees!")
+
+    button("Buy Health Potion (20 Rupees)", 200, 200, 300, 50, (200, 200, 200), (150, 150, 150), buy_potion)
+    button("Buy Shield (50 Rupees)", 200, 300, 300, 50, (200, 200, 200), (150, 150, 150), buy_shield)
+    button("Exit Shop", 300, 400, 200, 50, (200, 200, 200), (150, 150, 150), lambda: setattr(sys.modules[__name__], 'current_state', MAZE))
+
+    draw_text(battle_text, 100, 500, small_font)
+
+# New function for the dungeon
+def dungeon():
+    global player_health, player_rupees
+    draw_text("You've entered a mysterious dungeon!", 200, 50)
+    draw_text("What will you do?", 300, 100)
+
+    def explore():
+        global player_health, player_rupees
+        result = random.choice(["monster", "treasure", "trap"])
+        if result == "monster":
+            player_health -= 10
+            update_battle_text("You encountered a monster and lost 10 health!")
+        elif result == "treasure":
+            rupees_found = random.randint(10, 50)
+            player_rupees += rupees_found
+            update_battle_text(f"You found a treasure chest with {rupees_found} rupees!")
+        else:
+            player_health -= 5
+            update_battle_text("You triggered a trap and lost 5 health!")
+
+    button("Explore", 200, 200, 150, 50, (200, 200, 200), (150, 150, 150), explore)
+    button("Leave Dungeon", 400, 200, 150, 50, (200, 200, 200), (150, 150, 150), lambda: setattr(sys.modules[__name__], 'current_state', MAZE))
+
+    draw_text(f"Health: {player_health}", 50, 500)
+    draw_text(f"Rupees: {player_rupees}", 50, 550)
+    draw_text(battle_text, 200, 400, small_font)
+
+# Game loop
+running = True
+clock = pygame.time.Clock()
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE and current_state == INTRO_TEXT:
+                current_state = MAZE
+            elif current_state == MAZE:
+                if event.key == pygame.K_LEFT:
+                    move_player(-5, 0)
+                elif event.key == pygame.K_RIGHT:
+                    move_player(5, 0)
+                elif event.key == pygame.K_UP:
+                    move_player(0, -5)
+                elif event.key == pygame.K_DOWN:
+                    move_player(0, 5)
+
+    screen.fill(BLACK)
+
+    if current_state == INTRO:
+        draw_text("The Legend of the Sacred Maze", 200, 50)
+        draw_text("Press SKIP to begin your adventure, or CONTINUE for the story.", 100, 100)
+
+        def skip_intro():
+            global current_state
+            current_state = MAZE
+
+        def continue_intro():
+            global current_state
+            current_state = INTRO_TEXT
+
+        button("SKIP", 200, 200, 150, 50, (200, 200, 200), (150, 150, 150), skip_intro)
+        button("CONTINUE", 450, 200, 150, 50, (200, 200, 200), (150, 150, 150), continue_intro)
+
+    elif current_state == INTRO_TEXT:
+        y = 50
+        for line in intro_text:
+            wrapped_lines = wrap_text(line, small_font, WIDTH - 100)
+            for wrapped_line in wrapped_lines:
+                draw_text(wrapped_line, 50, y, small_font)
+                y += 30
+        draw_text("Press SPACE to continue", 300, 550)
+
+    elif current_state == MAZE:
+        draw_text("You are in the Sacred Maze.", 100, 50)
+        draw_text("Use arrow keys to move. Where will you go?", 100, 100)
+
+        draw_player()
+
+        def enter_battle():
+            global current_state
+            current_state = BATTLE
+
+        def enter_shop():
+            global current_state
+            current_state = SHOP
+
+        def enter_dungeon():
+            global current_state
+            current_state = DUNGEON
+
+        button("BATTLE", 600, 200, 150, 50, (200, 200, 200), (150, 150, 150), enter_battle)
+        button("SHOP", 600, 300, 150, 50, (200, 200, 200), (150, 150, 150), enter_shop)
+        button("DUNGEON", 600, 400, 150, 50, (200, 200, 200), (150, 150, 150), enter_dungeon)
+
+    elif current_state == BATTLE:
+        draw_text("BATTLE WITH PEBBLE TROLLS", 250, 50)
+        draw_text(f"Player Health: {player_health}", 100, 100)
+        draw_text(f"Pebble Troll Health: {pebble_health}", 100, 150)
+
+        def attack():
+            global pebble_health, player_health
+            damage = 5
+            if "Shield" in player_inventory:
+                damage += 2
+            pebble_health -= damage
+            if pebble_health > 0:
+                player_health += pebble_bite
+            update_battle_text(f"You dealt {damage} damage. Pebble Troll bit you for {-pebble_bite} damage!")
+
+        def defend():
+            global player_health
+            heal_amount = 5
+            player_health += heal_amount
+            if "Shield" in player_inventory:
+                heal_amount += 2
+            player_health += pebble_bite // 2
+            update_battle_text(f"You defended and healed {heal_amount}. Pebble Troll bit you for {-pebble_bite//2} damage!")
+
+        def use_potion():
+            global player_health, player_inventory
+            if "Health Potion" in player_inventory:
+                player_health += 30
+                player_inventory.remove("Health Potion")
+                update_battle_text("You used a Health Potion and recovered 30 health!")
+            else:
+                update_battle_text("You don't have any Health Potions!")
+
+        button("ATTACK", 200, 250, 150, 50, (200, 200, 200), (150, 150, 150), attack)
+        button("DEFEND", 400, 250, 150, 50, (200, 200, 200), (150, 150, 150), defend)
+        button("USE POTION", 300, 320, 150, 50, (200, 200, 200), (150, 150, 150), use_potion)
+
+        draw_text(battle_text, 100, 400, small_font)
+
+        if pebble_health <= 0:
+            draw_text("You defeated the Pebble Troll!", 250, 450)
+            player_rupees += random.randint(10, 30)
+            button("CONTINUE", 325, 500, 150, 50, (200, 200, 200), (150, 150, 150), lambda: setattr(sys.modules[__name__], 'current_state', MAZE))
+        elif player_health <= 0:
+            draw_text("Game Over! The Pebble Troll defeated you.", 200, 450)
+            button("RESTART", 325, 500, 150, 50, (200, 200, 200), (150, 150, 150), restart_game)
+
+    elif current_state == SHOP:
+        shop()
+
+    elif current_state == DUNGEON:
+        dungeon()
+
+    player_health = max(player_health, 0)
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
+sys.exit()

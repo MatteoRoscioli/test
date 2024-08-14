@@ -1,0 +1,64 @@
+.model small
+.stack 100h
+.data
+    ; Define constants
+    SCREEN_WIDTH equ 320
+    SCREEN_HEIGHT equ 200
+    VIDEO_INT equ 10h
+    KEYBOARD_INT equ 16h
+
+.code
+main proc
+    mov ax, @data
+    mov ds, ax
+
+    ; Set video mode (320x200, 256 colors)
+    mov ah, 0
+    mov al, 13h
+    int VIDEO_INT
+
+    ; Draw inverted triangle
+    mov cx, 160  ; X center
+    mov dx, 50   ; Y top
+    mov bx, 50   ; Half-width of base
+
+draw_triangle:
+    push cx
+    push dx
+    push bx
+
+    sub cx, bx   ; Left point of current line
+    mov al, 14   ; Color (yellow)
+
+draw_line:
+    mov ah, 0Ch  ; Function to draw pixel
+    int VIDEO_INT
+
+    inc cx
+    cmp cx, 160
+    jle draw_line
+
+    pop bx
+    pop dx
+    pop cx
+
+    inc dx       ; Move down
+    dec bx       ; Decrease width
+    cmp bx, 0
+    jg draw_triangle
+
+    ; Wait for keypress
+    mov ah, 0
+    int KEYBOARD_INT
+
+    ; Return to text mode
+    mov ah, 0
+    mov al, 3
+    int VIDEO_INT
+
+    ; Exit program
+    mov ah, 4Ch
+    int 21h
+main endp
+
+end main

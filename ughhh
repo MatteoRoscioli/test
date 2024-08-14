@@ -1,0 +1,84 @@
+import random
+
+class Player:
+    def __init__(self, name, is_impostor=False):
+        self.name = name
+        self.is_impostor = is_impostor
+        self.alive = True
+        self.current_room = None
+
+class Room:
+    def __init__(self, name):
+        self.name = name
+        self.players = []
+
+class Game:
+    def __init__(self, num_players):
+        self.rooms = [
+            Room("Cafeteria"), Room("Admin"), Room("Electrical"),
+            Room("Medbay"), Room("Storage"), Room("Reactor")
+        ]
+        self.players = [Player(f"Player{i+1}") for i in range(num_players)]
+        self.impostor = random.choice(self.players)
+        self.impostor.is_impostor = True
+        
+    def distribute_players(self):
+        for player in self.players:
+            room = random.choice(self.rooms)
+            room.players.append(player)
+            player.current_room = room
+    
+    def move_player(self, player):
+        current_room = player.current_room
+        current_room.players.remove(player)
+        new_room = random.choice(self.rooms)
+        new_room.players.append(player)
+        player.current_room = new_room
+    
+    def kill_player(self, killer, victim):
+        if killer.is_impostor and not victim.is_impostor:
+            victim.alive = False
+            victim.current_room.players.remove(victim)
+            print(f"{victim.name} was killed in {victim.current_room.name}!")
+    
+    def call_meeting(self):
+        print("Emergency meeting called!")
+        for player in self.players:
+            if player.alive:
+                print(f"{player.name} is in {player.current_room.name}")
+        
+        votes = [random.choice([p for p in self.players if p.alive]) for _ in range(len([p for p in self.players if p.alive]))]
+        ejected = max(set(votes), key=votes.count)
+        print(f"{ejected.name} was ejected!")
+        ejected.alive = False
+        if ejected.is_impostor:
+            print("The impostor was caught! Crewmates win!")
+            return True
+        elif len([p for p in self.players if p.alive and not p.is_impostor]) <= 1:
+            print("The impostor has won!")
+            return True
+        return False
+    
+    def play_round(self):
+        self.distribute_players()
+        for player in self.players:
+            if player.alive:
+                self.move_player(player)
+                if player.is_impostor:
+                    potential_victims = [p for p in player.current_room.players if p != player and p.alive]
+                    if potential_victims:
+                        self.kill_player(player, random.choice(potential_victims))
+        
+        if random.random() < 0.3:  # 30% chance of a meeting being called
+            return self.call_meeting()
+        return False
+
+    def play_game(self):
+        while True:
+            game_over = self.play_round()
+            if game_over:
+                break
+
+# Start the game
+game = Game(10)  # 10 players
+game.play_game()
