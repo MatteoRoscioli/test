@@ -28,23 +28,23 @@ current_slash = 10
 slash_waves = []
 wave_speed = 15
 wave_lifetime = 30
-wave_width = 60
-wave_length = 30
+wave_width = 6000
+wave_length = 3000
 
 # Monster properties
 monsters = []
 monster_size = 50
 monster_speed = 2
 max_monsters = 10
-spawn_interval = 1  # seconds
+spawn_interval = 0.1  # seconds
 last_spawn_time = time.time()
 
 # Monster properties
 monsters = []
 monster_size = 100
 monster_speed = 2
-max_monsters = 10
-spawn_interval = 5  # seconds
+max_monsters = 100
+spawn_interval = 0.001  # seconds
 last_spawn_time = time.time()
 monsters_to_spawn = 1
 
@@ -158,46 +158,11 @@ def draw_monster(screen, x, y, size, lives):
     pygame.draw.circle(screen, BLACK, (int(x - size // 4), int(y - size // 4)), eye_size // 2)
     pygame.draw.circle(screen, BLACK, (int(x + size // 4), int(y - size // 4)), eye_size // 2)
     
-def create_monster():
-    side = random.choice(['top', 'bottom', 'left', 'right'])
-    if side == 'top':
-        x = random.randint(0, width)
-        y = -monster_size
-    elif side == 'bottom':
-        x = random.randint(0, width)
-        y = height + monster_size
-    elif side == 'left':
-        x = -monster_size
-        y = random.randint(0, height)
-    else:  # right
-        x = width + monster_size
-        y = random.randint(0, height)
-    return [x, y]
 
-
-def draw_monster(surface, x, y, size):
-    # Body
-    pygame.draw.circle(surface, (0, 128, 0), (int(x), int(y)), int(size / 2))
-
-    # Eyes
-    eye_size = size // 8
-    pygame.draw.circle(surface, RED, (int(x - size / 4), int(y - size / 4)), eye_size)
-    pygame.draw.circle(surface, RED, (int(x + size / 4), int(y - size / 4)), eye_size)
-
-    # Mouth
-    pygame.draw.arc(surface, BLACK, (int(x - size / 3), int(y), int(size / 1.5), int(size / 2)), 0, 3.14, 3)
-
-    # Tentacles
-    for i in range(4):
-        angle = i * (360 / 4)
-        end_x = x + math.cos(math.radians(angle)) * (size / 2)
-        end_y = y + math.sin(math.radians(angle)) * (size / 2)
-        pygame.draw.line(surface, (0, 100, 0), (int(x), int(y)), (int(end_x), int(end_y)), 3)
-
-
+    
     # Draw lives
     font = pygame.font.SysFont(None, 20)
-    lives_text = font.render(str(lives_text), True, WHITE)
+    lives_text = font.render(str(lives), True, WHITE)
     screen.blit(lives_text, (x - lives_text.get_width() // 2, y + size // 2 + 5))
 
 def draw_boss(screen, x, y, size, health):

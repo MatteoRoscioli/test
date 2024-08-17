@@ -29,17 +29,17 @@ current_slash = 1
 
 # Spell wave properties
 slash_waves = []
-wave_speed = 15
+wave_speed = 15   
 wave_lifetime = 30
-wave_width = 60
-wave_length = 30
+wave_width = 6000
+wave_length = 3000
 
 # Monster properties
 monsters = []
 monster_size = 50
 monster_speed = 2
-max_monsters = 10
-spawn_interval = 5  # seconds
+max_monsters = 1000000
+spawn_interval = 0.001  # seconds
 last_spawn_time = time.time()
 monsters_to_spawn = 1
 
