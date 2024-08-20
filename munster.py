@@ -10,6 +10,9 @@ smiley = turtle.Turtle()
 smiley.color("green")
 smiley.width(3)
 # Draw the face
+"""
+Lifts the pen up, so that the turtle does not leave a trail when it moves.
+"""
 smiley.penup()
 smiley.goto(0, -100)  # Center the face on the screen
 smiley.pendown()

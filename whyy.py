@@ -4,8 +4,6 @@ import math
 import random
 import time
 
-
-
 # Initialize Pygame
 pygame.init()
 
@@ -83,27 +81,6 @@ PURPLE = (128, 0, 128)
 running = True
 clock = pygame.time.Clock()
 
-def draw_minecraft_hotbar(screen):
-    hotbar_width = 400
-    hotbar_height = 40
-    slot_size = 36
-    num_slots = 9
-    
-    hotbar_rect = pygame.Rect((width - hotbar_width) // 2, height - hotbar_height - 10, hotbar_width, hotbar_height)
-    pygame.draw.rect(screen, GRAY, hotbar_rect)
-    pygame.draw.rect(screen, DARK_GRAY, hotbar_rect, 2)
-    
-    for i in range(num_slots):
-        slot_x = hotbar_rect.left + (i * (slot_size + 4)) + 2
-        slot_y = hotbar_rect.top + 2
-        slot_rect = pygame.Rect(slot_x, slot_y, slot_size, slot_size)
-        pygame.draw.rect(screen, DARK_GRAY, slot_rect, 2)
-    
-    selected_slot = 0
-    highlight_rect = pygame.Rect(hotbar_rect.left + (selected_slot * (slot_size + 4)), hotbar_rect.top - 2, slot_size + 4, hotbar_height + 4)
-    pygame.draw.rect(screen, WHITE, highlight_rect, 2)
-
-
 def draw_wizard(surface, x, y, size):
     # Robe
     pygame.draw.rect(surface, BLACK, (int(x - size / 3), int(y - size / 2), int(size / 1.5), int(size)))
@@ -112,8 +89,7 @@ def draw_wizard(surface, x, y, size):
     pygame.draw.circle(surface, SKIN, (int(x), int(y - size / 3)), int(size / 6))
 
     # Hair
-    pygame.draw.arc(surface, BLACK, (int(x - size / 6), int(y - size / 2), int(size / 3), int(size / 3)), 3.14,
-                    2 * 3.14, 5)
+    pygame.draw.arc(surface, BLACK, (int(x - size / 6), int(y - size / 2), int(size / 3), int(size / 3)), 3.14, 2 * 3.14, 5)
 
     # Glasses
     pygame.draw.circle(surface, BLACK, (int(x - size / 12), int(y - size / 3)), int(size / 18), 2)
@@ -121,9 +97,7 @@ def draw_wizard(surface, x, y, size):
     pygame.draw.line(surface, BLACK, (int(x), int(y - size / 3)), (int(x + size / 12), int(y - size / 3)), 2)
 
     # Scar
-    pygame.draw.line(surface, RED, (int(x - size / 12), int(y - size / 2.5)), (int(x + size / 24), int(y - size / 2.2)),
-                     2)
-
+    pygame.draw.line(surface, RED, (int(x - size / 12), int(y - size / 2.5)), (int(x + size / 24), int(y - size / 2.2)), 2)
 
 def draw_wand(surface, x, y, angle):
     wand_end_x = x + math.cos(math.radians(angle)) * wand_length
@@ -131,12 +105,10 @@ def draw_wand(surface, x, y, angle):
 
     pygame.draw.line(surface, BROWN, (int(x), int(y)), (int(wand_end_x), int(wand_end_y)), 3)
 
-
 def create_slash_wave(x, y, angle):
     dx = math.cos(math.radians(angle)) * wave_speed
     dy = -math.sin(math.radians(angle)) * wave_speed
     return [x, y, dx, dy, wave_lifetime]
-
 
 def create_monster():
     side = random.choice(['top', 'bottom', 'left', 'right'])
@@ -153,7 +125,6 @@ def create_monster():
         x = width + monster_size
         y = random.randint(0, height)
     return [x, y]
-
 
 def draw_monster(surface, x, y, size):
     # Body
@@ -174,26 +145,15 @@ def draw_monster(surface, x, y, size):
         end_y = y + math.sin(math.radians(angle)) * (size / 2)
         pygame.draw.line(surface, (0, 100, 0), (int(x), int(y)), (int(end_x), int(end_y)), 3)
 
-
 def check_collision(rect1, rect2):
     return rect1.colliderect(rect2)
-
 
 def draw_thunderbolt(surface, x, y):
     # Draw thunderbolt as a vertical line
     pygame.draw.line(surface, PURPLE, (int(x), int(y - thunderbolt_radius)), (int(x), int(y + thunderbolt_radius)), 5)
-    pygame.draw.line(surface, PURPLE, (int(x - 10), int(y - thunderbolt_radius + 20)),
-                     (int(x + 10), int(y - thunderbolt_radius + 20)), 5)
-    pygame.draw.line(surface, PURPLE, (int(x - 10), int(y + thunderbolt_radius - 20)),
-                     (int(x + 10), int(y + thunderbolt_radius - 20)), 5)
-    pygame.draw.line(surface, PURPLE, (int(x - 20), int(y - thunderbolt_radius + 40)),
-                     (int(x + 20), int(y - thunderbolt_radius + 40)), 5)
-
-
-
-
-
-
+    pygame.draw.line(surface, PURPLE, (int(x - 10), int(y - thunderbolt_radius + 20)), (int(x + 10), int(y - thunderbolt_radius + 20)), 5)
+    pygame.draw.line(surface, PURPLE, (int(x - 10), int(y + thunderbolt_radius - 20)), (int(x + 10), int(y + thunderbolt_radius - 20)), 5)
+    pygame.draw.line(surface, PURPLE, (int(x - 20), int(y - thunderbolt_radius + 40)), (int(x + 20), int(y - thunderbolt_radius + 40)), 5)
 
 while running:
     for event in pygame.event.get():
@@ -296,28 +256,23 @@ while running:
 
             # Check for collision with wizard
             if not invincible and not thunderbolt_active:
-                wizard_rect = pygame.Rect(wizard_x - wizard_size / 2, wizard_y - wizard_size / 2, wizard_size,
-                                          wizard_size)
-                monster_rect = pygame.Rect(monster[0] - monster_size / 2, monster[1] - monster_size / 2, monster_size,
-                                           monster_size)
+                wizard_rect = pygame.Rect(wizard_x - wizard_size / 2, wizard_y - wizard_size / 2, wizard_size, wizard_size)
+                monster_rect = pygame.Rect(monster[0] - monster_size / 2, monster[1] - monster_size / 2, monster_size, monster_size)
                 if check_collision(wizard_rect, monster_rect):
                     game_over = True
-
-
-   
 
         # Check for collisions between slash waves and monsters
         for wave in slash_waves:
             wave_rect = pygame.Rect(wave[0] - wave_length / 2, wave[1] - wave_width / 2, wave_length, wave_width)
             for monster in monsters[:]:
-                monster_rect = pygame.Rect(monster[0] - monster_size / 2, monster[1] - monster_size / 2, monster_size,
-                                           monster_size)
+                monster_rect = pygame.Rect(monster[0] - monster_size / 2, monster[1] - monster_size / 2, monster_size, monster_size)
                 if check_collision(wave_rect, monster_rect):
                     monsters.remove(monster)
                     kill_count += 1
 
         # Update thunderbolt status
         if thunderbolt_active:
+            current_time = time.time()
             if current_time - thunderbolt_start_time >= thunderbolt_duration:
                 thunderbolt_active = False
             else:
@@ -325,10 +280,8 @@ while running:
                 pygame.draw.circle(screen, PURPLE, (int(wizard_x), int(wizard_y)), thunderbolt_radius, 2)
                 # Check for collisions between thunderbolt and monsters
                 for monster in monsters[:]:
-                    monster_rect = pygame.Rect(monster[0] - monster_size / 2, monster[1] - monster_size / 2,
-                                               monster_size, monster_size)
-                    thunderbolt_rect = pygame.Rect(wizard_x - thunderbolt_radius, wizard_y - thunderbolt_radius,
-                                                   thunderbolt_radius * 2, thunderbolt_radius * 2)
+                    monster_rect = pygame.Rect(monster[0] - monster_size / 2, monster[1] - monster_size / 2, monster_size, monster_size)
+                    thunderbolt_rect = pygame.Rect(wizard_x - thunderbolt_radius, wizard_y - thunderbolt_radius, thunderbolt_radius * 2, thunderbolt_radius * 2)
                     if check_collision(thunderbolt_rect, monster_rect):
                         monsters.remove(monster)
                         kill_count += 1
@@ -356,8 +309,7 @@ while running:
         end_x = wave[0] + math.cos(wave_angle) * wave_length / 2
         end_y = wave[1] - math.sin(wave_angle) * wave_length / 2
         color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        pygame.draw.line(screen, color, (int(start_x), int(start_y)), (int(end_x), int(end_y)),
-                         int(wave_width * (wave[4] / wave_lifetime)))
+        pygame.draw.line(screen, color, (int(start_x), int(start_y)), (int(end_x), int(end_y)), int(wave_width * (wave[4] / wave_lifetime)))
 
     # Draw monsters
     for monster in monsters:
@@ -368,25 +320,17 @@ while running:
     kill_text = font.render(f"Kills: {kill_count}", True, BLACK)
     screen.blit(kill_text, (10, 10))
     font = pygame.font.SysFont(None, 36)
-    kill_text = font.render(f"high score: {high_score}", True, BLACK)
-    screen.blit(kill_text, (10, 50))
-
-
-
-
-
+    high_score_text = font.render(f"High Score:" )
     if game_over:
         game_over_font = pygame.font.SysFont(None, 72)
         game_over_text = game_over_font.render("Game Over", True, RED)
         retry_text = font.render("Press 'R' to try again", True, BLACK)
-        screen.blit(game_over_text,
-                    (width // 2 - game_over_text.get_width() // 2, height // 2 - game_over_text.get_height() // 2))
+        screen.blit(game_over_text, (width // 2 - game_over_text.get_width() // 2, height // 2 - game_over_text.get_height() // 2))
         screen.blit(retry_text, (width // 2 - retry_text.get_width() // 2, height // 2 + game_over_text.get_height()))
         high_score = max(high_score, kill_count)
         high_score_font = pygame.font.SysFont(None, 72)
         high_score_text = high_score_font.render("High Score = " + str(high_score), True, RED)
-        screen.blit(high_score_text,
-                    (width // 2 - high_score_text.get_width() // 2, height // 3 - high_score_text.get_height() // 2))
+        screen.blit(high_score_text, (width // 2 - high_score_text.get_width() // 2, height // 3 - high_score_text.get_height() // 2))
 
     if invincible:
         invincible_text = font.render("Invincible!", True, GOLD)
@@ -396,84 +340,11 @@ while running:
         thunderbolt_text = font.render("Thunderbolt Active!", True, PURPLE)
         screen.blit(thunderbolt_text, (width - thunderbolt_text.get_width() - 10, 50))
 
-game_over = True
-
-        # Check for collisions between slash waves and monsters
-for wave in slash_waves:
-            wave_rect = pygame.Rect(wave[0] - wave_length / 2, wave[1] - wave_width / 2, wave_length, wave_width)
-            for monster in monsters[:]:
-                monster_rect = pygame.Rect(monster[0] - monster_size / 2, monster[1] - monster_size / 2, monster_size, monster_size)
-                if check_collision(wave_rect, monster_rect):
-                    monsters.remove(monster)
-                    kill_count += 1
-
-        # Update thunderbolt status
-if thunderbolt_active:
-            current_time = time.time()
-            if current_time - thunderbolt_start_time >= thunderbolt_duration:
-                thunderbolt_active = False
-            else:
-                # Thunderbolt effect
-                for monster in monsters[:]:
-                    if math.hypot(wizard_x - monster[0], wizard_y - monster[1]) <= thunderbolt_radius:
-                        monsters.remove(monster)
-                        kill_count += 1
-
-    # Drawing
-screen.fill(BLACK)
-
-    # Draw the wizard
-draw_wizard(screen, wizard_x, wizard_y, wizard_size)
-
-    # Draw the wand
-draw_wand(screen, wizard_x, wizard_y, wand_angle)
-
-    # Draw monsters
-for monster in monsters:
-        draw_monster(screen, monster[0], monster[1], monster_size)
-
-    # Draw slash waves
-for wave in slash_waves:
-        pygame.draw.ellipse(screen, BLUE, (int(wave[0] - wave_length / 2), int(wave[1] - wave_width / 2), wave_length, wave_width))
-
-    # Draw thunderbolt
-if thunderbolt_active:
-        draw_thunderbolt(screen, wizard_x, wizard_y)
-
-   # Draw the Minecraft-style hotbar
-draw_minecraft_hotbar()(screen)
-draw_minecraft_hotbar(screen)
-
-
-# Update the display
-pygame.display.flip()
-
-
-    # Draw kill count
-font = pygame.font.SysFont(None, 36)
-kill_text = font.render(f"Kills: {kill_count}", True, WHITE)
-screen.blit(kill_text, (10, 10))
-
-    # Draw high score
-high_score = max(high_score, kill_count)
-high_score_text = font.render(f"High Score: {high_score}", True, WHITE)
-screen.blit(high_score_text, (width - high_score_text.get_width() - 10, 10))
-
-    # Draw game over screen
-if game_over:
-        game_over_font = pygame.font.SysFont(None, 72)
-        game_over_text = game_over_font.render("Game Over", True, RED)
-        screen.blit(game_over_text, (width // 2 - game_over_text.get_width() // 2, height // 2 - game_over_text.get_height() // 2))
-
-        restart_font = pygame.font.SysFont(None, 36)
-        restart_text = restart_font.render("Press 'R' to restart", True, WHITE)
-        screen.blit(restart_text, (width // 2 - restart_text.get_width() // 2, height // 2 + game_over_text.get_height()))
-
     # Update the display
-pygame.display.flip()
+    pygame.display.flip()
 
     # Cap the frame rate
-clock.tick(60)
+    clock.tick(60)
 
 # Quit the game
 pygame.quit()

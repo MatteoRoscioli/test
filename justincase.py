@@ -10,7 +10,10 @@ pygame.init()
 # Set up the display
 width, height = 800, 600
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Harry Potter vs Monsters")
+pygame.display.set_caption("A game of cat & mouse amongus")
+
+# Round counter
+current_round = 0
 
 # Wizard properties
 wizard_x = width // 2
@@ -20,7 +23,7 @@ wizard_size = 60
 wand_angle = 0
 
 # Wand properties
-wand_length = 40
+wand_length = 1500000
 slash_duration = 10
 slash_angle = 90  # Total angle of slash arc
 current_slash = 0
@@ -35,9 +38,9 @@ wave_length = 30
 # Monster properties
 monsters = []
 monster_size = 50
-monster_speed = 2
+monster_speed = 3
 max_monsters = 10
-spawn_interval = 5  # seconds
+spawn_interval = 3  # seconds
 last_spawn_time = time.time()
 
 # Boss properties
@@ -63,7 +66,7 @@ thunderbolt_start_time = 0
 thunderbolt_duration = 2  # Thunderbolt lasts for 2 seconds
 thunderbolt_cooldown = 10  # Thunderbolt cooldown is 10 seconds
 last_thunderbolt_time = 0
-thunderbolt_radius = 100
+thunderbolt_radius = 300
 
 # Arrow key press counters
 up_arrow_press_count = 0
@@ -109,6 +112,11 @@ def create_monster():
         return [-monster_size // 2, random.randint(0, height), 0, 0, lives]
     else:  # right
         return [width + monster_size // 2, random.randint(0, height), 0, 0, lives]
+    
+def main():
+    global wizard_x, wizard_y, wand_angle, slash_waves, monsters, boss, kill_count, game_over, invincible
+    global current_round, thunderbolt_active, last_thunderbolt_time, thunderbolt_start_time, up_arrow_press_count
+    global down_arrow_press_count, last_arrow_press_time, last_spawn_time
 
 def create_boss():
     side = random.choice(['top', 'bottom', 'left', 'right'])
@@ -405,8 +413,8 @@ while running:
     screen.blit(kill_text, (10, 10))
 
     # Draw round number
-    round_text = font.render(f"Round: {round_number}", True, BLACK)
-    screen.blit(round_text, (10, 50))
+    round_text = font.render(f"ROUND: {current_round}", True, BLACK)
+    screen.blit(round_text, (10, 90))
 
     if game_over:
         game_over_font = pygame.font.SysFont(None, 72)
