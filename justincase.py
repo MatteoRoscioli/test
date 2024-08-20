@@ -75,7 +75,6 @@ arrow_press_time = 2  # seconds to press 10 times
 last_arrow_press_time = 0
 
 # Round properties
-round_number = 1
 monsters_per_round = 10
 boss_defeated = False
 
@@ -203,7 +202,7 @@ while running:
                 thunderbolt_active = False
                 up_arrow_press_count = 0
                 down_arrow_press_count = 0
-                round_number = 1
+                current_round = 0
                 monsters_per_round = 10
                 boss_defeated = False
             elif event.key == pygame.K_UP and not game_over:
@@ -271,7 +270,6 @@ while running:
         if len(monsters) == 0 and boss is None:
             if boss_defeated:
                 # Start a new round
-                round_number += 1
                 monsters_per_round += 5  # Increase difficulty each round
                 boss_defeated = False
             
@@ -281,7 +279,7 @@ while running:
         # Spawn boss when all monsters are defeated
         if len(monsters) == 0 and boss is None and not boss_defeated:
             boss = create_boss()
-            boss[2] = boss_health * round_number (1,2,3,4,5,6,7,8,9,10,2)  # Increase boss health each round
+            boss[2] = boss_health * current_round (1,2,3,4,5,6,7,8,9,10,2)  # Increase boss health each round
 
         # Update monsters
         for monster in monsters:
@@ -328,6 +326,7 @@ while running:
                         if monster[4] <= 0:
                             monsters.remove(monster)
                             kill_count += 1
+                            current_round += 1
 
         # Boss movement and attacks
         if boss is not None:
@@ -360,7 +359,7 @@ while running:
                     slash_waves.remove(wave)
                     if boss[2] <= 0:
                         boss = None
-                        kill_count += 10 * round_number  # More points for defeating the boss, scaled by round
+                        kill_count += 10 * current_round  # More points for defeating the boss, scaled by round
                         boss_defeated = True
 
         # Thunderbolt effect on boss
@@ -371,7 +370,7 @@ while running:
                 boss[2] -= 20  # Decrease boss health more with thunderbolt
                 if boss[2] <= 0:
                     boss = None
-                    kill_count += 10 * round_number  # More points for defeating the boss, scaled by round
+                    kill_count += 10 * current_round  # More points for defeating the boss, scaled by round
                     boss_defeated = True
 
     # Drawing
