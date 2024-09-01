@@ -46,24 +46,18 @@ current_level = 1
 difficulty_factor = 1.0
 rounds_without_losing = 3
 
-# Skins and abilities
+# Skins
 skins = {
-    'blue': {'color': BLUE, 'unlocked': True, 'requirement': 'Default skin.', 'ability': None},
-    'gold': {'color': GOLD, 'unlocked': False, 'requirement': 'Play 5 rounds w/out losing.', 'ability': 'invincibility'},
-    'purple': {'color': PURPLE, 'unlocked': False, 'requirement': 'Collect 50 coins.', 'ability': 'coin_magnet'},
-    'orange': {'color': ORANGE, 'unlocked': False, 'requirement': 'Complete 10 levels', 'ability': 'speed_boost'},
-    'pink': {'color': PINK, 'unlocked': False, 'requirement': 'Collect 100 coins.', 'ability': 'shrink'},
-    'cyan': {'color': CYAN, 'unlocked': False, 'requirement': 'Play 10 rounds w/out losing.', 'ability': 'teleport'},
-    'lime': {'color': LIME, 'unlocked': False, 'requirement': 'Complete 20 levels.', 'ability': 'obstacle_slow'},
-    'magenta': {'color': MAGENTA, 'unlocked': False, 'requirement': 'Collect 200 coins.', 'ability': 'extra_life'}
+    'blue': {'color': BLUE, 'unlocked': True, 'requirement':'Default skin.'},
+    'gold': {'color': GOLD, 'unlocked': False, 'requirement':'Play 5 rounds w/out losing.'},
+    'purple': {'color': PURPLE, 'unlocked': False, 'requirement': 'Collect 50 coins.'},
+    'orange': {'color': ORANGE, 'unlocked': False, 'requirement':'Complete 10 levels'},
+    'pink': {'color': PINK, 'unlocked': False, 'requirement':'Collect 100 coins.'},
+    'cyan': {'color': CYAN, 'unlocked': False, 'requirement':'Play 10 rounds w/out losing.'},
+    'lime': {'color': LIME, 'unlocked': False, 'requirement':'Complete 20 levels.'},
+    'magenta': {'color': MAGENTA, 'unlocked': False, 'requirement': 'Collect 200 coins.'}
 }
 current_skin = 'blue'
-
-# Ability cooldowns and durations
-ability_cooldown = 0
-ability_duration = 0
-COOLDOWN_TIME = 600  # 10 seconds (60 fps * 10)
-DURATION_TIME = 300  # 5 seconds (60 fps * 5)
 
 # Fonts
 font = pygame.font.Font(None, 24)
@@ -119,27 +113,15 @@ def create_coins(num_coins):
         })
     return coins
 
-def create_deadly_blocks(num_blocks):
-    blocks = []
-    for _ in range(num_blocks):
-        blocks.append({
-            'x': random.randint(room_x + 10, room_x + room_width - 10),
-            'y': random.randint(room_y + 10, room_y + room_height - 10),
-            'size': 5  # Size of the deadly block
-        })
-    return blocks
-
 def generate_level(difficulty):
     num_obstacles = min(13, 5 + difficulty // 2)
     obstacle_speed = min(10, 3 + difficulty * 0.5)
     num_coins = min(10, 2 + difficulty // 2)
-    num_deadly_blocks = min(15, difficulty)  # Number of deadly blocks increases with difficulty
     
     return {
         'obstacles': create_obstacles(num_obstacles, obstacle_speed),
         'exit': {'x': room_x + room_width - 30, 'y': room_y + room_height // 2 - 30, 'width': 30, 'height': 60},
-        'coins': create_coins(num_coins),
-        'deadly_blocks': create_deadly_blocks(num_deadly_blocks)
+        'coins': create_coins(num_coins)
     }
 
 current_room = generate_level(current_level)
@@ -176,10 +158,8 @@ def skins_menu():
         color = GREEN if data['unlocked'] else RED
         draw_text(f"{skin.capitalize()}: {'Unlocked' if data['unlocked'] else 'Locked'}", x, y + skin_size * 2 + 5, color=color)
         
-        # Draw requirement and ability
+        # Draw requirement (always visible)
         draw_text(f"Req: {data['requirement']}", x, y + skin_size * 2 + 25, color=BLACK)
-        if data['ability']:
-            draw_text(f"Ability: {data['ability'].replace('_', ' ').title()}", x, y + skin_size * 2 + 45, color=BLACK)
     
     draw_text("Press 1-8 to select a skin (if unlocked)", WIDTH // 2 - 150, HEIGHT - 60)
     draw_text("Press ESC to return to main menu", WIDTH // 2 - 150, HEIGHT - 30)
@@ -208,38 +188,6 @@ def check_skin_unlocks():
         skins['lime']['unlocked'] = True
     if collected_coins >= 200:
         skins['magenta']['unlocked'] = True
-
-def use_ability():
-    global player_speed, player_radius, ability_duration, ability_cooldown, lives
-    
-    ability = skins[current_skin]['ability']
-    if ability == 'invincibility':
-        ability_duration = DURATION_TIME
-    elif ability == 'speed_boost':
-        player_speed = 8
-        ability_duration = DURATION_TIME
-    elif ability == 'shrink':
-        player_radius = 5
-        ability_duration = DURATION_TIME
-    elif ability == 'teleport':
-        player_x = random.randint(room_x + player_radius, room_x + room_width - player_radius)
-        player_y = random.randint(room_y + player_radius, room_y + room_height - player_radius)
-    elif ability == 'obstacle_slow':
-        for obstacle in current_room['obstacles']:
-            obstacle['dy'] *= 0.5
-        ability_duration = DURATION_TIME
-    elif ability == 'extra_life':
-        lives += 1
-    
-    ability_cooldown = COOLDOWN_TIME
-
-def reset_ability_effects():
-    global player_speed, player_radius
-    
-    player_speed = 5
-    player_radius = 10
-    for obstacle in current_room['obstacles']:
-        obstacle['dy'] *= 2 if abs(obstacle['dy']) < 3 else 1
 
 # Game loop
 clock = pygame.time.Clock()
@@ -278,9 +226,6 @@ while running:
                     skin_name = list(skins.keys())[skin_index]
                     if skins[skin_name]['unlocked']:
                         current_skin = skin_name
-            elif event.key == pygame.K_e and game_state == PLAYING:
-                if skins[current_skin]['ability'] and ability_cooldown == 0:
-                    use_ability()
 
     if game_state == PLAYING:
         # Move player
@@ -310,7 +255,7 @@ while running:
         player_rect = pygame.Rect(player_x - player_radius, player_y - player_radius, player_radius * 2, player_radius * 2)
         for obstacle in current_room['obstacles']:
             obstacle_rect = pygame.Rect(obstacle['x'], obstacle['y'], obstacle_size, obstacle_size)
-            if player_rect.colliderect(obstacle_rect) and skins[current_skin]['ability'] != 'invincibility':
+            if player_rect.colliderect(obstacle_rect):
                 lives -= 1
                 fails += 1
                 rounds_without_losing = 0
@@ -318,28 +263,13 @@ while running:
                     game_state = GAME_OVER
                 reset_player()
 
-        # Check for collisions with deadly blocks
-        for block in current_room['deadly_blocks']:
-            block_rect = pygame.Rect(block['x'], block['y'], block['size'], block['size'])
-            if player_rect.colliderect(block_rect) and skins[current_skin]['ability'] != 'invincibility':
-                lives = 0  # Instant death
-                fails += 1
-                rounds_without_losing = 0
-                game_state = GAME_OVER
-                break
-
         # Check for coin collection
-                                    # Check for coin collection
         for coin in current_room['coins'][:]:
             coin_rect = pygame.Rect(coin['x'] - coin_radius, coin['y'] - coin_radius, coin_radius * 2, coin_radius * 2)
-            if player_rect.colliderect(coin_rect) or (skins[current_skin]['ability'] == 'coin_magnet' and ability_duration > 0):
-                if skins[current_skin]['ability'] == 'coin_magnet' and ability_duration > 0:
-                    coin['x'] += (player_x - coin['x']) * 0.1
-                    coin['y'] += (player_y - coin['y']) * 0.1
-                if player_rect.colliderect(coin_rect):
-                    current_room['coins'].remove(coin)
-                    collected_coins += 1
-                    check_skin_unlocks()
+            if player_rect.colliderect(coin_rect):
+                current_room['coins'].remove(coin)
+                collected_coins += 1
+                check_skin_unlocks()
 
         # Check for exit
         exit_rect = pygame.Rect(
@@ -355,14 +285,6 @@ while running:
             reset_player()
             rounds_without_losing += 1
             check_skin_unlocks()
-
-        # Update ability cooldown and duration
-        if ability_cooldown > 0:
-            ability_cooldown -= 1
-        if ability_duration > 0:
-            ability_duration -= 1
-        else:
-            reset_ability_effects()
 
         # Draw everything
         screen.fill(WHITE)
@@ -381,10 +303,6 @@ while running:
         for coin in current_room['coins']:
             pygame.draw.circle(screen, YELLOW, (coin['x'], coin['y']), coin_radius)
         
-        # Draw deadly blocks
-        for block in current_room['deadly_blocks']:
-            pygame.draw.rect(screen, BLACK, (block['x'], block['y'], block['size'], block['size']))
-        
         # Draw exit
         pygame.draw.rect(screen, GREEN, (
             current_room['exit']['x'],
@@ -399,16 +317,6 @@ while running:
         draw_text(f"Fails: {fails}", 10, 90)
         draw_text(f"Coins: {collected_coins}", 10, 130)
         draw_text(f"Rounds without losing: {rounds_without_losing}", 10, 170)
-        
-        # Draw ability status
-        if skins[current_skin]['ability']:
-            if ability_cooldown > 0:
-                draw_text(f"Ability Cooldown: {ability_cooldown // 60}s", 10, 210)
-            else:
-                draw_text("Ability Ready! Press E to use", 10, 210)
-            
-            if ability_duration > 0:
-                draw_text(f"Ability Active: {ability_duration // 60}s", 10, 250)
 
     elif game_state == MAIN_MENU:
         main_menu()
