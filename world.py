@@ -42,10 +42,10 @@ room_y = 50
 # Game state
 lives = 3
 fails = 0
-collected_coins = 100
-current_level = 3
+collected_coins = 0
+current_level = 1
 difficulty_factor = 1.0
-rounds_without_losing = 3
+rounds_without_losing = 0
 
 # Skins and abilities
 skins = {
@@ -324,7 +324,7 @@ while running:
         # Check for collisions with deadly blocks
         for block in current_room['deadly_blocks']:
             block_rect = pygame.Rect(block['x'], block['y'], block['size'], block['size'])
-            if player_rect.colliderect(block_rect) and skins[current_skin]['ability'] != 'invincibility':
+            if player_rect.colliderect(block_rect) and skins[current_skin]['ability'] != 'poopyscrudkaka':
                 lives = 0  # Instant death
                 fails += 1
                 rounds_without_losing = 0
