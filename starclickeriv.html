@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Clicker IV</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #e2e8f0;
+            --primary-color: #3b82f6;
+            --secondary-color: #22c55e;
+            --accent-color: #eab308;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .game-container {
+            display: flex;
+            height: 100%;
+        }
+
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+        }
+
+        .side-menu {
+            width: 300px;
+            background-color: rgba(30, 41, 59, 0.8);
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        #star-button {
+            width: 200px;
+            height: 200px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        #star-button:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 10px var(--accent-color));
+        }
+
+        #star-button:active {
+            transform: scale(0.95);
+        }
+
+        .star-svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--accent-color);
+        }
+
+        .upgrade-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .upgrade-button:hover {
+            background-color: #60a5fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .upgrade-button:disabled {
+            background-color: #4b5563;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+            text-align: center;
+        }
+
+        #star-count, #stars-per-second {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .stat {
+            background-color: rgba(30, 41, 59, 0.6);
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin: 10px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="main-area">
+            <h1>Star Clicker IV</h1>
+            <div class="stat">Stars: <span id="star-count">0</span></div>
+            <div class="stat">Stars per second: <span id="stars-per-second">0</span></div>
+            <button id="star-button">
+                <svg class="star-svg" viewBox="0 0 51 48">
+                    <path d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z"/>
+                </svg>
+            </button>
+        </div>
+        <div class="side-menu">
+            <h2>Upgrades</h2>
+            <button id="upgrade-click" class="upgrade-button">Upgrade Click: 10 stars</button>
+            <button id="upgrade-auto" class="upgrade-button">Upgrade Auto-Collector: 50 stars</button>
+        </div>
+    </div>
+
+    <script>
+        let stars = 0;
+        let clickPower = 1;
+        let autoCollectors = 0;
+        let clickUpgradeCost = 10;
+        let autoUpgradeCost = 50;
+
+        const starCount = document.getElementById('star-count');
+        const starsPerSecond = document.getElementById('stars-per-second');
+        const starButton = document.getElementById('star-button');
+        const upgradeClickButton = document.getElementById('upgrade-click');
+        const upgradeAutoButton = document.getElementById('upgrade-auto');
+
+        function updateDisplay() {
+            starCount.textContent = Math.floor(stars);
+            starsPerSecond.textContent = autoCollectors;
+            upgradeClickButton.textContent = `Upgrade Click: ${clickUpgradeCost} stars`;
+            upgradeAutoButton.textContent = `Upgrade Auto-Collector: ${autoUpgradeCost} stars`;
+            
+            upgradeClickButton.disabled = stars < clickUpgradeCost;
+            upgradeAutoButton.disabled = stars < autoUpgradeCost;
+        }
+
+        function collectStar() {
+            stars += clickPower;
+            updateDisplay();
+            animateStarButton();
+        }
+
+        function upgradeClick() {
+            if (stars >= clickUpgradeCost) {
+                stars -= clickUpgradeCost;
+                clickPower++;
+                clickUpgradeCost = Math.ceil(clickUpgradeCost * 1.5);
+                updateDisplay();
+            }
+        }
+
+        function upgradeAuto() {
+            if (stars >= autoUpgradeCost) {
+                stars -= autoUpgradeCost;
+                autoCollectors++;
+                autoUpgradeCost = Math.ceil(autoUpgradeCost * 1.5);
+                updateDisplay();
+            }
+        }
+
+        function autoCollect() {
+            stars += autoCollectors;
+            updateDisplay();
+        }
+
+        function animateStarButton() {
+            starButton.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                starButton.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        starButton.addEventListener('click', collectStar);
+        upgradeClickButton.addEventListener('click', upgradeClick);
+        upgradeAutoButton.addEventListener('click', upgradeAuto);
+
+        setInterval(autoCollect, 1000);
+        updateDisplay();
+    </script>
+</body>
+</html>
