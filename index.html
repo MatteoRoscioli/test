@@ -1,4 +1,133 @@
 <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ToyStore Demo (HTML Only)</title>
+    <meta name="description" content="A simple, HTML-only demo page that mimics selling toys." />
+  </head>
+  <body>
+    <header>
+      <h1>ToyStore</h1>
+      <nav aria-label="Primary">
+        <a href="#toys">Toys</a>
+        |
+        <a href="#cart">Cart</a>
+        |
+        <a href="#about">About</a>
+        |
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="hero">
+        <h2>Play starts here</h2>
+        <p>This is a demo storefront built with only HTML.</p>
+        <p><a href="#toys">Shop toys</a></p>
+      </section>
+
+      <section id="toys" aria-labelledby="toys-heading">
+        <h2 id="toys-heading">Toys</h2>
+        <p>Browse a few sample products. Links simulate adding to cart by jumping to the cart section.</p>
+        <ul>
+          <li>
+            <article>
+              <img src="https://via.placeholder.com/240x160?text=Blocks" alt="Building blocks set" width="240" height="160" />
+              <h3>Building Blocks Set</h3>
+              <p>Colorful stackable blocks for ages 3+.</p>
+              <p>Price: $19.99</p>
+              <p><a href="#cart" title="Simulate adding Building Blocks Set to cart">Add to Cart</a></p>
+            </article>
+          </li>
+          <li>
+            <article>
+              <img src="https://via.placeholder.com/240x160?text=Robot" alt="Wind-up robot toy" width="240" height="160" />
+              <h3>Wind-up Robot</h3>
+              <p>Classic tin robot with key wind mechanism.</p>
+              <p>Price: $14.50</p>
+              <p><a href="#cart" title="Simulate adding Wind-up Robot to cart">Add to Cart</a></p>
+            </article>
+          </li>
+          <li>
+            <article>
+              <img src="https://via.placeholder.com/240x160?text=Teddy" alt="Plush teddy bear" width="240" height="160" />
+              <h3>Plush Teddy Bear</h3>
+              <p>Soft and cuddly companion for nap time.</p>
+              <p>Price: $24.00</p>
+              <p><a href="#cart" title="Simulate adding Plush Teddy Bear to cart">Add to Cart</a></p>
+            </article>
+          </li>
+        </ul>
+      </section>
+
+      <section id="cart" aria-labelledby="cart-heading">
+        <h2 id="cart-heading">Your Cart</h2>
+        <p>This demo does not track items. To implement a real cart, you would add JavaScript and a backend.</p>
+        <table border="1" cellpadding="8" cellspacing="0" aria-describedby="cart-note">
+          <thead>
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">Qty</th>
+              <th scope="col">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">Total</td>
+              <td>$0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+        <p id="cart-note">Use the form below to simulate a checkout.</p>
+
+        <form action="#" method="get">
+          <fieldset>
+            <legend>Checkout (Demo)</legend>
+            <p>
+              <label for="name">Name</label><br />
+              <input id="name" name="name" type="text" required />
+            </p>
+            <p>
+              <label for="email">Email</label><br />
+              <input id="email" name="email" type="email" required />
+            </p>
+            <p>
+              <label for="address">Shipping Address</label><br />
+              <textarea id="address" name="address" rows="3" cols="30"></textarea>
+            </p>
+            <p>
+              <button type="submit">Place Order</button>
+            </p>
+          </fieldset>
+        </form>
+      </section>
+
+      <section id="about" aria-labelledby="about-heading">
+        <h2 id="about-heading">About</h2>
+        <p>ToyStore is a fictional shop for demonstration purposes. This page uses only HTML to keep things simple.</p>
+      </section>
+
+      <section id="contact" aria-labelledby="contact-heading">
+        <h2 id="contact-heading">Contact</h2>
+        <p>Questions? Email us at <a href="mailto:hello@toystore.example">hello@toystore.example</a>.</p>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 ToyStore Demo</p>
+    </footer>
+  </body>
+  </html>
+
+<!DOCTYPE html>
 <html class="no-js" lang="zxx">
 
 <head>
